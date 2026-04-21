@@ -1,0 +1,35 @@
+pull_request_rules:
+  - name: Automatic merge on approval
+    conditions:
+      - and:
+          - "-draft"
+
+          # Unit tests
+          - check-success=3.11 on ubuntu-latest
+          - check-success=3.12 on ubuntu-latest
+          - check-success=3.13 on ubuntu-latest
+          - check-success=3.14 on ubuntu-latest
+
+          # Linting
+          - check-success=Ruff 3.14 on ubuntu-latest
+
+          # Coverage
+          - check-success=Coverage report
+
+          # At least 1 reviewer from maintainers
+          - and:
+            - "#approved-reviews-by>=1"
+
+    actions:
+      merge:
+        method: merge
+
+  - name: Ping author on conflicts
+    conditions:
+      - "conflict"
+      - "-closed"
+    actions:
+      comment:
+        message: |
+          This pull request has merge conflicts that must be resolved before it can be merged.
+          @{{ author }} please rebase your branch.
